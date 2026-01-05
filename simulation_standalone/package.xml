@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>simulation_standalone</name>
+  <version>1.0.0</version>
+  <description>
+    Standalone UAV simulation package with depth camera and LiDAR sensors.
+    Can be used independently for sensor simulation and testing.
+  </description>
+
+  <maintainer email="user@example.com">User</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <!-- Core dependencies -->
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>roslib</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>roslib</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>rviz</exec_depend>
+  
+  <!-- UAV Simulator dependencies -->
+  <exec_depend>map_render</exec_depend>
+  <exec_depend>lidar_simulator</exec_depend>
+  <exec_depend>poscmd_2_odom</exec_depend>
+  <exec_depend>odom_visualization</exec_depend>
+  <exec_depend>quadrotor_msgs</exec_depend>
+
+  <export>
+  </export>
+</package>
+

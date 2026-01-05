@@ -1,0 +1,22 @@
+<launch>
+  <!-- CUDA-accelerated LiDAR Simulator -->
+  <!-- This launch file should be included in your main simulation launch -->
+  
+  <!-- NOTE: Requires a .pcd map file for rendering -->
+  <!-- Maps with .pcd support: classical_office, darpa_tunnel, power_plant -->
+
+  <!-- Arguments -->
+  <arg name="odom_topic" default="/uav_simulator/odometry"/>
+  <arg name="lidar_topic" default="/livox/lidar"/>
+
+  <!-- Load LiDAR simulator configuration -->
+  <rosparam command="load" file="$(find lidar_simulator)/config/lidar_simulator.yaml"/>
+
+  <!-- Launch LiDAR simulator node -->
+  <node pkg="lidar_simulator" name="lidar_simulator_node" type="lidar_simulator_node" output="screen">
+    <remap from="/uav_simulator/odometry" to="$(arg odom_topic)"/>
+    <remap from="/livox/lidar" to="$(arg lidar_topic)"/>
+  </node>
+
+</launch>
+

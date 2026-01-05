@@ -1,0 +1,33 @@
+# Power Plant Map Configuration
+map_config:
+  map_file: "power_plant.pcd"
+  map_dimension: 3
+  
+  # Initial position and orientation
+  init_x: 0.0
+  init_y: 0.0
+  init_z: 1.0
+  init_yaw: 0.0
+
+  map_size:
+    map_min_x: -50.0
+    map_min_y: -50.0
+    map_min_z: -5.0
+    map_max_x: 50.0
+    map_max_y: 50.0
+    map_max_z: 20.0
+
+  scale: 1.0
+
+  T_b_c:
+  - [ 0.0, 0.0, 1.0, 0.0]
+  - [-1.0, 0.0, 0.0, 0.0]
+  - [ 0.0,-1.0, 0.0, 0.0]
+  - [ 0.0, 0.0, 0.0, 1.0]
+
+  T_m_w:
+  - [ 1.0, 0.0, 0.0, 0.0]
+  - [ 0.0, 1.0, 0.0, 0.0]
+  - [ 0.0, 0.0, 1.0, 0.0]
+  - [ 0.0, 0.0, 0.0, 1.0]
+

@@ -1,0 +1,51 @@
+# UAV Model Configuration
+# Contains dynamics and sensing parameters for simulation
+
+uav_model:
+  # ==================== Dynamics Parameters ====================
+  dynamics_parameters:
+    max_linear_velocity: 2.0        # m/s
+    max_linear_acceleration: 3.0    # m/s^2
+    max_yaw_velocity: 1.57079632679      # rad/s (90 deg/s)
+    max_yaw_acceleration: 1.57079632679  # rad/s^2 (90 deg/s^2)
+
+  # ==================== Sensing Parameters ====================
+  sensing_parameters:
+    # ---------- Depth Camera Parameters ----------
+    camera_intrinsics:
+      fx: 320.0
+      fy: 320.0
+      cx: 320.0
+      cy: 240.0
+    image_width: 640
+    image_height: 480
+    min_depth: 0.1
+    max_depth: 5.0
+    fov:
+      horizontal: 1.570796327  # ~90 degrees
+      vertical: 1.28700222     # ~74 degrees
+
+    # ---------- LiDAR Parameters (Livox Mid-360 style) ----------
+    lidar:
+      # Field of View
+      horizontal_fov: 6.283185307179586  # 360 degrees
+      vertical_fov_min: -0.122173047639603  # -7 degrees
+      vertical_fov_max: 0.907571211037051   # +52 degrees (total 59 degrees)
+      
+      # Range
+      min_range: 0.1
+      max_range: 30.0
+      
+      # Output point count (after downsampling)
+      target_points: 10000
+      
+      # Render rate
+      render_rate: 10.0  # Hz
+      
+      # Noise
+      range_noise_std: 0.02  # 2cm
+      add_noise: true
+      
+      # LiDAR to body transform [x, y, z, roll, pitch, yaw]
+      lidar_to_body: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+

@@ -1,0 +1,32 @@
+<launch>
+  <!-- Livox Mid-360 LiDAR Simulator -->
+  <!-- This launch file should be included in your main simulation launch -->
+
+  <!-- Arguments -->
+  <arg name="map_name" default="classical_office"/>
+  <arg name="odom_topic" default="/uav_simulator/odometry"/>
+  <arg name="output_topic" default="/livox/lidar"/>
+  <arg name="use_sim_time" default="false"/>
+
+  <!-- Sim time -->
+  <param name="/use_sim_time" value="$(arg use_sim_time)"/>
+
+  <!-- Load Mid-360 configuration -->
+  <rosparam command="load" file="$(find lidar_simulator)/config/mid360.yaml"/>
+  
+  <!-- Set map file path -->
+  <param name="/mid360/map_file" value="$(find map_render)/resource/$(arg map_name).pcd"/>
+
+  <!-- Launch Mid-360 simulator node -->
+  <node pkg="lidar_simulator" name="mid360_simulator_node" type="mid360_simulator_node" output="screen">
+    <remap from="/uav_simulator/odometry" to="$(arg odom_topic)"/>
+    <remap from="/livox/lidar" to="$(arg output_topic)"/>
+  </node>
+
+  <!-- Optional: Start RViz for visualization -->
+  <arg name="rviz" default="true"/>
+  <node if="$(arg rviz)" pkg="rviz" type="rviz" name="rviz_lidar" 
+        args="-d $(find lidar_simulator)/config/lidar_viz.rviz" output="screen"/>
+
+</launch>
+

@@ -1,0 +1,28 @@
+# Render Configuration for Depth Camera and LiDAR
+
+# Pointcloud Render (for .pcd maps)
+pointcloud_render:
+  render_rate: 15
+  sensor_pose_rate: 30
+  inflate_radius: 0.1
+  verbose: false
+
+# Mesh Render (for .stl maps)
+mesh_render:
+  # NOTE: Set this to your Open3D resource path!
+  # Install Open3D and find the resources folder in the build directory
+  # Example: /home/user/Open3D/build/bin/resources
+  open3d_resource_path: ${OPEN3D_RESOURCE_PATH}
+  enable_depth: true
+  enable_color: false
+  render_rate: 15
+  verbose: false
+
+# LiDAR Simulator (CUDA-accelerated)
+lidar_simulator:
+  pose_rate: 30.0           # Hz, LiDAR pose publishing rate
+  inflate_radius: 0.1       # Point inflation for rendering
+  verbose: false
+  world_frame: "world"
+  lidar_frame: "lidar"
+

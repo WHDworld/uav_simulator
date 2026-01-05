@@ -1,0 +1,150 @@
+<launch>
+  <!-- ================================================================== -->
+  <!-- UAV Simulation Standalone Launch File                              -->
+  <!-- Provides complete UAV simulation with depth camera and LiDAR       -->
+  <!-- ================================================================== -->
+
+  <!-- Map Selection -->
+  <arg name="map_name" default="classical_office"/>
+  
+  <!-- Enable/Disable Sensors -->
+  <arg name="enable_depth_camera" default="true"/>
+  <arg name="enable_lidar" default="true"/>
+  <arg name="enable_depth_pointcloud" default="true"/>
+  <arg name="enable_rgb_camera" default="true"/>
+  
+  <!-- Initial Position -->
+  <arg name="init_x" default="-1.0"/>
+  <arg name="init_y" default="0.0"/>
+  <arg name="init_z" default="1.0"/>
+  <arg name="init_yaw" default="0.0"/>
+  
+  <!-- Visualization -->
+  <arg name="rviz" default="true"/>
+  
+  <!-- Open3D resource path (for STL mesh rendering) -->
+  <arg name="open3d_resource_path" default="$(env HOME)/install/Open3D/build/bin/resources"/>
+  
+  <!-- Topics (can be remapped if needed) -->
+  <arg name="odom_topic" default="/uav_simulator/odometry"/>
+  <arg name="depth_image_topic" default="/uav_simulator/depth_image"/>
+  <arg name="sensor_pose_topic" default="/uav_simulator/sensor_pose"/>
+  <arg name="depth_pc_topic" default="/depth_pointcloud"/>
+  <arg name="lidar_topic" default="/livox/lidar"/>
+  <arg name="pos_cmd_topic" default="/planning/pos_cmd"/>
+
+  <!-- ================================================================== -->
+  <!-- Load Configurations                                                 -->
+  <!-- ================================================================== -->
+  
+  <!-- Robot model configuration -->
+  <rosparam command="load" file="$(find simulation_standalone)/config/uav_model.yaml"/>
+  
+  <!-- Map configuration -->
+  <rosparam command="load" file="$(find simulation_standalone)/config/map/$(arg map_name).yaml"/>
+  
+  <!-- Render configuration -->
+  <rosparam command="load" file="$(find simulation_standalone)/config/render.yaml"/>
+  
+  <!-- Override Open3D resource path -->
+  <param name="/mesh_render/open3d_resource_path" value="$(arg open3d_resource_path)"/>
+  
+  <!-- Override init position if provided -->
+  <param name="/map_config/init_x" value="$(arg init_x)"/>
+  <param name="/map_config/init_y" value="$(arg init_y)"/>
+  <param name="/map_config/init_z" value="$(arg init_z)"/>
+  <param name="/map_config/init_yaw" value="$(arg init_yaw)"/>
+  
+  <!-- ================================================================== -->
+  <!-- UAV Dynamics Simulation                                             -->
+  <!-- ================================================================== -->
+  
+  <!-- Position Command to Odometry Converter -->
+  <node pkg="poscmd_2_odom" name="poscmd_2_odom" type="poscmd_2_odom" output="screen">
+    <remap from="~command" to="$(arg pos_cmd_topic)"/>
+    <remap from="~odometry" to="$(arg odom_topic)"/>
+    <param name="init_x" value="$(arg init_x)"/>
+    <param name="init_y" value="$(arg init_y)"/>
+    <param name="init_z" value="$(arg init_z)"/>
+  </node>
+  
+  <!-- ================================================================== -->
+  <!-- Depth Camera Simulation                                             -->
+  <!-- ================================================================== -->
+  
+  <group if="$(arg enable_depth_camera)">
+    <!-- Map Render Node (provides depth camera simulation) -->
+    <node pkg="map_render" name="map_render_node" type="map_render_node" output="screen">
+      <remap from="/uav_simulator/depth_image" to="$(arg depth_image_topic)"/>
+      <remap from="/uav_simulator/sensor_pose" to="$(arg sensor_pose_topic)"/>
+    </node>
+    
+    <!-- Depth to PointCloud Converter (optional) -->
+    <node if="$(arg enable_depth_pointcloud)" 
+          pkg="simulation_standalone" name="depth_to_pointcloud" type="depth_to_pointcloud.py" output="screen">
+      <param name="world_frame" value="world"/>
+      <param name="downsample" value="4"/>
+      <remap from="/uav_simulator/depth_image" to="$(arg depth_image_topic)"/>
+      <remap from="/uav_simulator/sensor_pose" to="$(arg sensor_pose_topic)"/>
+      <remap from="/depth_pointcloud" to="$(arg depth_pc_topic)"/>
+    </node>
+    
+    <!-- RGB Camera Simulator (generates RGB image from depth) -->
+    <node if="$(arg enable_rgb_camera)"
+          pkg="simulation_standalone" name="rgb_camera_simulator" type="rgb_camera_simulator.py" output="screen">
+      <!-- Color modes: 'gray', 'depth_colored', 'normal_colored', 'ambient_occlusion' -->
+      <param name="color_mode" value="ambient_occlusion"/>
+      <param name="ambient_light" value="0.3"/>
+      <param name="diffuse_light" value="0.7"/>
+      <param name="add_noise" value="true"/>
+      <param name="noise_std" value="3.0"/>
+      <param name="edge_enhancement" value="0.2"/>
+      <remap from="/uav_simulator/depth_image" to="$(arg depth_image_topic)"/>
+    </node>
+  </group>
+  
+  <!-- ================================================================== -->
+  <!-- LiDAR Simulation (CUDA-accelerated)                                 -->
+  <!-- ================================================================== -->
+  
+  <group if="$(arg enable_lidar)">
+    <!-- Load LiDAR render configuration -->
+    <rosparam command="load" file="$(find simulation_standalone)/config/render.yaml"/>
+    
+    <!-- LiDAR Simulator Node -->
+    <node pkg="lidar_simulator" name="lidar_simulator_node" type="lidar_simulator_node" output="screen">
+      <remap from="/uav_simulator/odometry" to="$(arg odom_topic)"/>
+      <remap from="/livox/lidar" to="$(arg lidar_topic)"/>
+    </node>
+  </group>
+  
+  <!-- ================================================================== -->
+  <!-- Visualization                                                       -->
+  <!-- ================================================================== -->
+  
+  <!-- Robot Mesh Visualizer -->
+  <node pkg="odom_visualization" name="odom_visualization" type="odom_visualization" output="screen">
+    <remap from="~odometry" to="$(arg odom_topic)"/>
+  </node>
+  
+  <!-- ================================================================== -->
+  <!-- Interactive Control                                                 -->
+  <!-- ================================================================== -->
+  
+  <!-- Waypoint Control via RViz 2D Nav Goal -->
+  <node pkg="simulation_standalone" name="waypoint_control" type="waypoint_control.py" output="screen">
+    <param name="default_height" value="$(arg init_z)"/>
+    <param name="control_rate" value="50.0"/>
+    <remap from="/uav_simulator/odometry" to="$(arg odom_topic)"/>
+    <remap from="/planning/pos_cmd" to="$(arg pos_cmd_topic)"/>
+  </node>
+  
+  <!-- ================================================================== -->
+  <!-- RViz                                                                -->
+  <!-- ================================================================== -->
+  
+  <node if="$(arg rviz)" pkg="rviz" type="rviz" name="rviz_simulation" 
+        args="-d $(find simulation_standalone)/rviz/simulation.rviz" output="screen"/>
+
+</launch>
+

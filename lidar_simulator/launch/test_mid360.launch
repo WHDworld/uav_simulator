@@ -1,0 +1,44 @@
+<launch>
+  <!-- Test launch for Mid-360 LiDAR Simulator -->
+  <!-- Publishes a static odometry and runs the lidar simulator -->
+
+  <arg name="map_name" default="classical_office"/>
+  <arg name="x" default="0.0"/>
+  <arg name="y" default="0.0"/>
+  <arg name="z" default="1.0"/>
+  <arg name="yaw" default="0.0"/>
+
+  <!-- Load Mid-360 configuration -->
+  <rosparam command="load" file="$(find lidar_simulator)/config/mid360.yaml"/>
+  
+  <!-- Set map file path -->
+  <param name="/mid360/map_file" value="$(find map_render)/resource/$(arg map_name).pcd"/>
+
+  <!-- TF: world -> livox_frame (static for testing) -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="world_to_lidar_tf"
+        args="$(arg x) $(arg y) $(arg z) $(arg yaw) 0 0 world livox_frame"/>
+
+  <!-- Publish fake odometry for testing -->
+  <node pkg="rostopic" type="rostopic" name="fake_odom_pub"
+        args="pub -r 100 /uav_simulator/odometry nav_msgs/Odometry
+        '{header: {stamp: now, frame_id: world}, 
+          child_frame_id: livox_frame,
+          pose: {pose: {position: {x: $(arg x), y: $(arg y), z: $(arg z)}, 
+                        orientation: {x: 0, y: 0, z: 0, w: 1}}},
+          twist: {twist: {linear: {x: 0, y: 0, z: 0}, angular: {x: 0, y: 0, z: 0}}}}'"
+        output="screen"/>
+
+  <!-- Launch Mid-360 simulator node -->
+  <node pkg="lidar_simulator" name="mid360_simulator_node" type="mid360_simulator_node" output="screen"/>
+
+  <!-- RViz for visualization -->
+  <node pkg="rviz" type="rviz" name="rviz_lidar" 
+        args="-d $(find lidar_simulator)/config/lidar_viz.rviz" output="screen"/>
+
+</launch>
+
+
+
+
+
+

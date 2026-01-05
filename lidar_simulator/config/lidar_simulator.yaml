@@ -1,0 +1,13 @@
+# LiDAR Simulator Configuration
+# Main LiDAR parameters are in uav_model_simulator.yaml
+
+lidar_simulator:
+  # Render parameters
+  pose_rate: 30.0  # Hz, rate for publishing lidar pose
+  inflate_radius: 0.1  # Point inflation for rendering
+  verbose: false
+  
+  # Frame IDs
+  world_frame: "world"
+  lidar_frame: "lidar"
+
