@@ -1,0 +1,36 @@
+# Octa Maze Map Configuration
+map_config:
+  map_file: "octa_maze.pcd"
+  map_dimension: 2
+  
+  # Initial position and orientation of the robot under the world frame
+  init_x: 0.0
+  init_y: 0.0
+  init_z: 1.0
+  init_yaw: 0.0
+
+  map_size:
+    # Size of the map in meters
+    map_min_x: -20.0
+    map_min_y: -20.0
+    map_min_z: -1.0
+    map_max_x: 20.0
+    map_max_y: 20.0
+    map_max_z: 3.0
+
+  scale: 1.0
+
+  # Camera to body transformation matrix
+  T_b_c:
+  - [ 0.0, 0.0, 1.0, 0.0]
+  - [-1.0, 0.0, 0.0, 0.0]
+  - [ 0.0,-1.0, 0.0, 0.0]
+  - [ 0.0, 0.0, 0.0, 1.0]
+
+  # Map to world transformation matrix (identity, PCD already in world frame)
+  T_m_w:
+  - [ 1.0, 0.0, 0.0, 0.0]
+  - [ 0.0, 1.0, 0.0, 0.0]
+  - [ 0.0, 0.0, 1.0, 0.0]
+  - [ 0.0, 0.0, 0.0, 1.0]
+

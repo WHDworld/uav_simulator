@@ -5,7 +5,7 @@
   <!-- ================================================================== -->
 
   <!-- Map Selection -->
-  <arg name="map_name" default="classical_office"/>
+  <arg name="map_name" default="octa_maze"/>
   
   <!-- Enable/Disable Sensors -->
   <arg name="enable_depth_camera" default="true"/>

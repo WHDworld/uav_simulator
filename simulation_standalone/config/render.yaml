@@ -11,8 +11,8 @@ pointcloud_render:
 mesh_render:
   # NOTE: Set this to your Open3D resource path!
   # Install Open3D and find the resources folder in the build directory
-  # Example: /home/user/Open3D/build/bin/resources
-  open3d_resource_path: ${OPEN3D_RESOURCE_PATH}
+  # This path will be overridden by launch file argument
+  open3d_resource_path: "/home/whd/install/Open3D/build/bin/resources"
   enable_depth: true
   enable_color: false
   render_rate: 15
